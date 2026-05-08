@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAYROLL PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f2f7;--surface:#ffffff;--surface2:#f5f6fa;--border:#e0e3ec;
+  --accent:#5b52f0;--accent2:#7c74ff;--gold:#d97706;--green:#059669;
+  --red:#dc2626;--blue:#2563eb;--orange:#ea580c;--text:#1a1a2e;--muted:#6b7280;--card:#ffffff;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+header{background:var(--surface);border-bottom:2px solid var(--border);padding:0 16px;position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:10px;height:56px;box-shadow:var(--shadow)}
+.logo{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:2px;color:var(--accent);white-space:nowrap}
+.site-sel select{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:0.8rem;font-family:'Inter',sans-serif;outline:none;cursor:pointer;max-width:120px}
+.nav{display:flex;gap:3px;overflow-x:auto;flex:1}.nav::-webkit-scrollbar{height:0}
+.nbtn{padding:7px 11px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:0.75rem;white-space:nowrap;transition:all 0.2s}
+.nbtn.active{background:var(--accent);color:#fff}.nbtn:hover:not(.active){background:var(--surface2);color:var(--text)}
+
+main{max-width:1100px;margin:0 auto;padding:18px 14px}
+.stitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:14px;color:var(--text);display:flex;align-items:center;gap:8px}
+.stitle small{font-size:0.65rem;font-family:'Inter',sans-serif;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
+.wcard{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;transition:all 0.2s;box-shadow:var(--shadow)}
+.wcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(91,82,240,0.12)}
+.wcard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.wcard-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.wcard-sub{font-size:0.75rem;color:var(--muted);margin-top:2px}
+.solde-b{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;padding:6px 12px;text-align:right}
+.solde-v{font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:500;color:#fff}
+.solde-l{font-size:0.6rem;color:rgba(255,255,255,0.8);text-transform:uppercase}
+.wmeta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.tag{font-size:0.68rem;padding:3px 8px;border-radius:6px;font-weight:600;white-space:nowrap;border:1.5px solid}
+.tg{color:var(--gold);border-color:rgba(217,119,6,0.3);background:rgba(217,119,6,0.08)}
+.tr{color:var(--red);border-color:rgba(220,38,38,0.3);background:rgba(220,38,38,0.08)}
+.tgr{color:var(--green);border-color:rgba(5,150,105,0.3);background:rgba(5,150,105,0.08)}
+.tb{color:var(--blue);border-color:rgba(37,99,235,0.3);background:rgba(37,99,235,0.08)}
+.to{color:var(--orange);border-color:rgba(234,88,12,0.3);background:rgba(234,88,12,0.08)}
+.wstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:10px;border-top:1.5px solid var(--border)}
+.sv{text-align:center;padding:4px}
+.sv-v{font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:600;color:var(--text)}
+.sv-l{font-size:0.62rem;color:var(--muted);text-transform:uppercase;margin-top:2px;font-weight:500}
+.wactions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+
+.fpanel{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);font-weight:700}
+.fg input,.fg select{background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:500;outline:none;transition:border-color 0.2s;width:100%}
+.fg input:focus,.fg select:focus{border-color:var(--accent);background:#fff}
+.fg select option{background:#fff;color:var(--text)}
+.prev-box{background:rgba(91,82,240,0.06);border:1.5px solid rgba(91,82,240,0.2);border-radius:9px;padding:10px 14px;font-size:0.85rem;color:var(--accent);margin-top:10px;display:none;font-weight:500}
+.echeancier{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px;margin-top:10px;display:none}
+.echeancier-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:8px;font-weight:700}
+.ech-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:500}
+.ech-row:last-child{border-bottom:none}
+.ech-date{color:var(--muted)}.ech-amt{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600}
+.ech-row.paid .ech-date{color:var(--green)}.ech-row.paid .ech-amt{color:var(--green)}
+.ech-row.next{background:rgba(91,82,240,0.06);border-radius:6px;padding:6px 8px;margin:2px 0}
+
+.btn{padding:9px 18px;border-radius:9px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:0.82rem;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.bp{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(91,82,240,0.3)}.bp:hover{background:var(--accent2);transform:translateY(-1px)}
+.bs{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,0.3)}.bs:hover{background:#047857}
+.bd{background:#fff;color:var(--red);border:1.5px solid rgba(220,38,38,0.3)}.bd:hover{background:rgba(220,38,38,0.06)}
+.bg{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border)}.bg:hover{border-color:var(--accent);color:var(--accent)}
+.bsm{padding:6px 10px;font-size:0.74rem}
+
+.twrap{overflow-x:auto;border-radius:12px;border:1.5px solid var(--border);margin-bottom:18px;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;background:var(--card)}
+thead{background:var(--surface2)}
+th{padding:11px 13px;text-align:left;font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;white-space:nowrap}
+td{padding:11px 13px;border-top:1.5px solid var(--border);font-size:0.85rem;vertical-align:middle;font-weight:500}
+tr:hover td{background:rgba(91,82,240,0.03)}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+.sumbar{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.sc{background:var(--card);border:1.5px solid var(--border);border-radius:13px;padding:13px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.sc.sp::before{background:var(--accent)}.sc.sg::before{background:var(--gold)}.sc.sgr::before{background:var(--green)}.sc.sr::before{background:var(--red)}.sc.sb::before{background:var(--blue)}.sc.so::before{background:var(--orange)}
+.scv{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;line-height:1}
+.scv.cp{color:var(--accent)}.scv.cg{color:var(--gold)}.scv.cgr{color:var(--green)}.scv.cr{color:var(--red)}.scv.cb{color:var(--blue)}.scv.co{color:var(--orange)}
+.scl{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-top:3px;font-weight:600}
+
+.days-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.dc{padding:7px 13px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-size:0.78rem;font-weight:600;transition:all 0.15s;user-select:none}
+.dc.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.prog{background:var(--border);border-radius:4px;height:6px;margin:4px 0}
+.prog-f{height:6px;border-radius:4px;transition:width 0.3s}
+
+.view{display:none}.view.active{display:block}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:22px;width:min(540px,100%);max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+.pay-sum{background:var(--surface2);border-radius:12px;padding:14px;margin-bottom:14px;border:1.5px solid var(--border)}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:0.88rem}
+.prow.ptotal{border-top:2px solid var(--border);margin-top:8px;padding-top:10px;font-weight:700;font-size:1rem}
+.prow.ptotal .pval{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:1.05rem}
+.plbl{color:var(--muted);font-weight:500}.pval{font-family:'JetBrains Mono',monospace;font-weight:600}
+.pval.pos{color:var(--green)}.pval.neg{color:var(--red)}.pval.neu{color:var(--gold)}
+
+.pay-input-box{background:rgba(91,82,240,0.06);border:1.5px solid rgba(91,82,240,0.2);border-radius:10px;padding:14px;margin-top:12px}
+.pay-input-box label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);font-weight:700;display:block;margin-bottom:8px}
+.pay-input-box input{background:#fff;border:1.5px solid var(--accent);border-radius:9px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;outline:none;width:100%}
+.avance-auto{border-radius:8px;padding:9px 12px;margin-top:9px;font-size:0.82rem;display:none;font-weight:500}
+.avance-auto.danger{background:rgba(220,38,38,0.08);border:1.5px solid rgba(220,38,38,0.2);color:var(--red)}
+.avance-auto.warning{background:rgba(217,119,6,0.08);border:1.5px solid rgba(217,119,6,0.2);color:var(--gold)}
+
+.hist-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.hist-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.hist-date{font-size:0.75rem;color:var(--muted);font-weight:500}
+.hist-amt{font-family:'JetBrains Mono',monospace;font-size:0.95rem;font-weight:700;color:var(--green)}
+.hist-d{font-size:0.75rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;font-weight:500}
+
+.alert{background:rgba(217,119,6,0.08);border:1.5px solid rgba(217,119,6,0.3);border-radius:10px;padding:11px 15px;margin-bottom:14px;font-size:0.85rem;color:var(--gold);font-weight:600}
+.itabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;margin-bottom:14px;width:fit-content;flex-wrap:wrap;border:1.5px solid var(--border)}
+.itab{padding:7px 14px;border:none;background:transparent;color:var(--muted);border-radius:7px;cursor:pointer;font-size:0.78rem;font-weight:700;font-family:'Inter',sans-serif;transition:all 0.2s}
+.itab.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(91,82,240,0.3)}
+.flex-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:13px}
+.mt{margin-top:13px}.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:10px;opacity:0.4}
+.empty p{font-size:0.95rem;font-weight:500}
+.divider{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:13px 0 8px;font-weight:700}
+.info-box{background:rgba(37,99,235,0.06);border:1.5px solid rgba(37,99,235,0.2);border-radius:9px;padding:10px 13px;font-size:0.8rem;color:var(--blue);margin-top:10px;font-weight:500}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">PAYROLL PRO</div>
+  <div class="site-sel"><select id="global-site" onchange="renderDashboard()"><option value="all">🏢 Tous</option></select></div>
+  <nav class="nav">
+    <button class="nbtn active" onclick="showView('dashboard',this)">📊 Dashboard</button>
+    <button class="nbtn" onclick="showView('ouvriers',this)">👷 Ouvriers</button>
+    <button class="nbtn" onclick="showView('operations',this)">💸 Opérations</button>
+    <button class="nbtn" onclick="showView('paiements',this)">✅ Paiements</button>
+    <button class="nbtn" onclick="showView('sites',this)">🏪 Sites</button>
+  </nav>
+</header>
+<main>
+
+<!-- DASHBOARD -->
+<div class="view active" id="view-dashboard">
+  <div id="dash-alerts"></div>
+  <div class="sumbar" id="dash-sum"></div>
+  <div class="stitle">Ouvriers <small id="dash-site-lbl"></small></div>
+  <div class="grid" id="dash-workers"></div>
+</div>
+
+<!-- OUVRIERS -->
+<div class="view" id="view-ouvriers">
+  <div class="stitle">Ajouter un ouvrier</div>
+  <div class="fpanel">
+    <div class="fgrid">
+      <div class="fg"><label>Nom complet</label><input type="text" id="w-nom" placeholder="Ex: Dahmane"></div>
+      <div class="fg"><label>Poste / Métier</label><input type="text" id="w-poste" placeholder="Ex: Maçon"></div>
+      <div class="fg"><label>Salaire / semaine (HTG)</label><input type="number" id="w-salaire" placeholder="0" min="0"></div>
+      <div class="fg"><label>Site / Magasin</label><select id="w-site"><option value="">— Sélectionner —</option></select></div>
+      <div class="fg"><label>Date d'embauche</label><input type="date" id="w-embauche"></div>
+      <div class="fg"><label>Téléphone</label><input type="text" id="w-tel" placeholder="+509 xxxx xxxx"></div>
+      <div class="fg"><label>Notes</label><input type="text" id="w-notes" placeholder="Remarques..."></div>
+    </div>
+    <div class="fg mt"><label>Jours de paiement</label>
+      <div class="days-row" id="days-picker">
+        <div class="dc" data-day="Lundi">Lun</div><div class="dc" data-day="Mardi">Mar</div>
+        <div class="dc" data-day="Mercredi">Mer</div><div class="dc" data-day="Jeudi">Jeu</div>
+        <div class="dc" data-day="Vendredi">Ven</div><div class="dc" data-day="Samedi">Sam</div>
+        <div class="dc" data-day="Dimanche">Dim</div>
+      </div>
+    </div>
+    <div class="flex-row"><button class="btn bp" onclick="addWorker()">+ Ajouter l'ouvrier</button></div>
+  </div>
+  <div class="stitle">Liste des ouvriers</div>
+  <div class="grid" id="workers-list"></div>
+</div>
+
+<!-- OPERATIONS -->
+<div class="view" id="view-operations">
+  <div class="itabs">
+    <button class="itab active" onclick="showOp('avance',this)">💰 Avance</button>
+    <button class="itab" onclick="showOp('absence',this)">📅 Absence</button>
+    <button class="itab" onclick="showOp('heure',this)">⏰ Heures sup.</button>
+    <button class="itab" onclick="showOp('prime',this)">🎁 Prime</button>
+  </div>
+  <div id="op-avance">
+    <div class="fpanel">
+      <div class="fgrid">
+        <div class="fg"><label>Ouvrier</label><select id="a-ouvrier"><option value="">— Sélectionner —</option></select></div>
+        <div class="fg"><label>Montant (HTG)</label><input type="number" id="a-montant" placeholder="0" oninput="updAvPrev()"></div>
+        <div class="fg"><label>Date de l'avance</label><input type="date" id="a-date"></div>
+        <div class="fg"><label>Mode paiement</label>
+          <select id="a-mode"><option value="cash">💵 Cash</option><option value="virement">🏦 Virement</option><option value="mobile">📱 Mobile Money</option></select>
+        </div>
+        <div class="fg"><label>Motif</label><input type="text" id="a-motif" placeholder="Ex: urgence médicale..."></div>
+        <div class="fg"><label>Type remboursement</label>
+          <select id="a-type" onchange="updAvPrev()">
+            <option value="unique">Déduction unique</option>
+            <option value="echelonne">Échelonné (plusieurs semaines)</option>
+          </select>
+        </div>
+        <div class="fg" id="a-sem-grp" style="display:none"><label>Nombre de semaines</label><input type="number" id="a-semaines" value="4" min="2" max="52" oninput="updAvPrev()"></div>
+        <div class="fg" id="a-debut-grp" style="display:none"><label>Date début remboursement</label><input type="date" id="a-debut" oninput="updAvPrev()"></div>
+      </div>
+      <div class="prev-box" id="a-prev"></div>
+      <div class="echeancier" id="a-echeancier">
+        <div class="echeancier-title">📅 Échéancier de remboursement</div>
+        <div id="a-echeancier-rows"></div>
+      </div>
+      <div class="flex-row"><button class="btn bp" onclick="addAvance()">+ Enregistrer l'avance</button></div>
+    </div>
+    <div class="stitle">Historique avances</div>
+    <div class="twrap"><table><thead><tr><th>Ouvrier</th><th>Montant</th><th>Date</th><th>Type</th><th>Progression</th><th>Prochaine tranche</th><th></th></tr></thead><tbody id="avances-tbody"></tbody></table></div>
+  </div>
+  <div id="op-absence" style="display:none">
+    <div class="fpanel">
+      <div class="fgrid">
+        <div class="fg"><label>Ouvrier</label><select id="ab-ouvrier"><option value="">— Sélectionner —</option></select></div>
+        <div class="fg"><label>Date</label><input type="date" id="ab-date"></div>
+        <div class="fg"><label>Durée</label><select id="ab-duree"><option value="1">Journée complète</option><option value="0.5">Demi-journée</option></select></div>
+        <div class="fg"><label>Type</label>
+          <select id="ab-type">
+            <option value="injustifie">🔴 Injustifiée (déduit)</option>
+            <option value="justifie">🟢 Justifiée (non déduit)</option>
+            <option value="maladie">🟡 Maladie</option>
+            <option value="conge">🔵 Congé accordé</option>
+          </select>
+        </div>
+        <div class="fg"><label>Motif</label><input type="text" id="ab-motif" placeholder="Raison..."></div>
+      </div>
+      <div class="flex-row"><button class="btn bp" onclick="addAbsence()">+ Enregistrer l'absence</button></div>
+    </div>
+    <div class="stitle">Historique absences</div>
+    <div class="twrap"><table><thead><tr><th>Ouvrier</th><th>Date</th><th>Durée</th><th>Type</th><th>Motif</th><th>Retenue</th><th></th></tr></thead><tbody id="absences-tbody"></tbody></table></div>
+  </div>
+  <div id="op-heure" style="display:none">
+    <div class="fpanel">
+      <div class="fgrid">
+        <div class="fg"><label>Ouvrier</label><select id="h-ouvrier" onchange="updHPrev()"><option value="">— Sélectionner —</option></select></div>
+        <div class="fg"><label>Date</label><input type="date" id="h-date"></div>
+        <div class="fg"><label>Nombre d'heures</label><input type="number" id="h-heures" placeholder="Ex: 3" min="0.5" step="0.5" oninput="updHPrev()"></div>
+        <div class="fg"><label>Taux multiplicateur</label>
+          <select id="h-taux" onchange="updHPrev()">
+            <option value="1.5">×1.5 — Normal</option>
+            <option value="2">×2 — Jour férié</option>
+            <option value="custom">Personnalisé</option>
+          </select>
+        </div>
+        <div class="fg" id="h-cust-grp" style="display:none"><label>Taux personnalisé</label><input type="number" id="h-custom" placeholder="Ex: 1.75" step="0.25" min="1" oninput="updHPrev()"></div>
+        <div class="fg"><label>Motif</label><input type="text" id="h-motif" placeholder="Ex: Travail dimanche..."></div>
+      </div>
+      <div class="prev-box" id="h-prev"></div>
+      <div class="flex-row"><button class="btn bp" onclick="addHeure()">+ Enregistrer les heures</button></div>
+    </div>
+    <div class="stitle">Historique heures sup.</div>
+    <div class="twrap"><table><thead><tr><th>Ouvrier</th><th>Date</th><th>Heures</th><th>Taux</th><th>Montant</th><th>Motif</th><th></th></tr></thead><tbody id="heures-tbody"></tbody></table></div>
+  </div>
+  <div id="op-prime" style="display:none">
+    <div class="fpanel">
+      <div class="fgrid">
+        <div class="fg"><label>Ouvrier</label><select id="p-ouvrier"><option value="">— Sélectionner —</option></select></div>
+        <div class="fg"><label>Montant prime (HTG)</label><input type="number" id="p-montant" placeholder="0" min="0"></div>
+        <div class="fg"><label>Date</label><input type="date" id="p-date"></div>
+        <div class="fg"><label>Motif</label><input type="text" id="p-motif" placeholder="Ex: Prime Ramadan..."></div>
+      </div>
+      <div class="flex-row"><button class="btn bp" onclick="addPrime()">+ Enregistrer la prime</button></div>
+    </div>
+    <div class="stitle">Historique primes</div>
+    <div class="twrap"><table><thead><tr><th>Ouvrier</th><th>Montant</th><th>Date</th><th>Motif</th><th></th></tr></thead><tbody id="primes-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- PAIEMENTS -->
+<div class="view" id="view-paiements">
+  <div class="stitle">Effectuer un paiement</div>
+  <div class="fpanel">
+    <div class="fgrid">
+      <div class="fg"><label>Ouvrier</label><select id="pay-ouvrier" onchange="updPayPrev()"><option value="">— Sélectionner —</option></select></div>
+      <div class="fg"><label>Date paiement</label><input type="date" id="pay-date"></div>
+      <div class="fg"><label>Mode</label><select id="pay-mode"><option value="cash">💵 Cash</option><option value="virement">🏦 Virement</option><option value="mobile">📱 Mobile Money</option></select></div>
+      <div class="fg"><label>Note</label><input type="text" id="pay-note" placeholder="Remarque..."></div>
+    </div>
+    <div id="pay-prev" style="display:none" class="mt"></div>
+    <div class="flex-row"><button class="btn bs" onclick="effectuerPaiement()">✅ Confirmer le paiement</button></div>
+  </div>
+  <div class="stitle">Historique des paiements</div>
+  <div class="twrap"><table><thead><tr><th>Ouvrier</th><th>Site</th><th>Date</th><th>Sem.</th><th>Brut</th><th>Déductions</th><th>Net payé</th><th>Mode</th></tr></thead><tbody id="paiements-tbody"></tbody></table></div>
+</div>
+
+<!-- SITES -->
+<div class="view" id="view-sites">
+  <div class="stitle">Ajouter un site / magasin</div>
+  <div class="fpanel">
+    <div class="fgrid">
+      <div class="fg"><label>Nom du site</label><input type="text" id="s-nom" placeholder="Ex: Magasin Centre-Ville"></div>
+      <div class="fg"><label>Adresse</label><input type="text" id="s-adresse" placeholder="Adresse..."></div>
+    </div>
+    <div class="flex-row"><button class="btn bp" onclick="addSite()">+ Ajouter le site</button></div>
+  </div>
+  <div class="stitle">Mes sites</div>
+  <div class="grid" id="sites-list"></div>
+</div>
+</main>
+
+<!-- MODAL MODIFIER OUVRIER -->
+<div class="overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">✏️ Modifier l'ouvrier</div>
+    <div class="fgrid">
+      <div class="fg"><label>Nom complet</label><input type="text" id="edit-nom"></div>
+      <div class="fg"><label>Poste</label><input type="text" id="edit-poste"></div>
+      <div class="fg"><label>Salaire / semaine</label><input type="number" id="edit-salaire" min="0"></div>
+      <div class="fg"><label>Site</label><select id="edit-site"></select></div>
+      <div class="fg"><label>Date d'embauche</label><input type="date" id="edit-embauche"></div>
+      <div class="fg"><label>📌 Date dernier paiement</label><input type="date" id="edit-lastpay"></div>
+      <div class="fg"><label>Téléphone</label><input type="text" id="edit-tel"></div>
+      <div class="fg"><label>Notes</label><input type="text" id="edit-notes"></div>
+    </div>
+    <div class="info-box mt">💡 <strong>Date dernier paiement</strong> : indiquez quand vous avez payé cet ouvrier pour la dernière fois. L'app calculera les semaines dues à partir de cette date.</div>
+    <div class="fg mt"><label>Jours de paiement</label>
+      <div class="days-row" id="edit-days">
+        <div class="dc" data-day="Lundi">Lun</div><div class="dc" data-day="Mardi">Mar</div>
+        <div class="dc" data-day="Mercredi">Mer</div><div class="dc" data-day="Jeudi">Jeu</div>
+        <div class="dc" data-day="Vendredi">Ven</div><div class="dc" data-day="Samedi">Sam</div>
+        <div class="dc" data-day="Dimanche">Dim</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn bg" onclick="closeModal('modal-edit')">Annuler</button>
+      <button class="btn bp" id="modal-edit-ok">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PAIEMENT -->
+<div class="overlay" id="modal-pay">
+  <div class="modal">
+    <div class="modal-title">✅ Confirmer le paiement</div>
+    <div id="modal-pay-content"></div>
+    <div class="pay-input-box">
+      <label>Montant réellement donné (HTG)</label>
+      <input type="number" id="modal-pay-amount" placeholder="0" oninput="updPayAmount()">
+      <div class="avance-auto" id="avance-auto-msg"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn bg" onclick="closeModal('modal-pay')">Annuler</button>
+      <button class="btn bs" id="modal-pay-ok">💵 Payer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="overlay" id="modal-del">
+  <div class="modal">
+    <div class="modal-title">⚠️ Confirmer la suppression</div>
+    <p style="color:var(--muted);font-size:0.9rem;font-weight:500">Cette action est irréversible.</p>
+    <div class="modal-actions">
+      <button class="btn bg" onclick="closeModal('modal-del')">Annuler</button>
+      <button class="btn bd" id="modal-del-ok">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HISTORIQUE -->
+<div class="overlay" id="modal-hist">
+  <div class="modal" style="width:min(580px,100%)">
+    <div class="modal-title" id="hist-title">Historique</div>
+    <div id="hist-content"></div>
+    <div class="modal-actions"><button class="btn bg" onclick="closeModal('modal-hist')">Fermer</button></div>
+  </div>
+</div>
+
+<script>
+const SK='pp2_';
+// MIGRATION
+function migrateData(){
+  [['pp_workers','pp2_w'],['pp_sites','pp2_s'],['pp_avances','pp2_a'],['pp_absences','pp2_ab'],['pp_heures','pp2_h'],['pp_primes','pp2_p'],['pp_paiements','pp2_pay'],['pw_workers','pp2_w'],['pw_avances','pp2_a'],['pw_absences','pp2_ab']].forEach(([ok,nk])=>{
+    const od=localStorage.getItem(ok),nd=localStorage.getItem(nk);
+    if(od&&(!nd||nd==='[]')){try{const p=JSON.parse(od);if(p&&p.length>0)localStorage.setItem(nk,od);}catch(e){}}
+  });
+}
+migrateData();
+
+let workers=JSON.parse(localStorage.getItem(SK+'w')||'[]');
+let sites=JSON.parse(localStorage.getItem(SK+'s')||'[]');
+let avances=JSON.parse(localStorage.getItem(SK+'a')||'[]');
+let absences=JSON.parse(localStorage.getItem(SK+'ab')||'[]');
+let heures=JSON.parse(localStorage.getItem(SK+'h')||'[]');
+let primes=JSON.parse(localStorage.getItem(SK+'p')||'[]');
+let paiements=JSON.parse(localStorage.getItem(SK+'pay')||'[]');
+
+function save(){
+  localStorage.setItem(SK+'w',JSON.stringify(workers));
+  localStorage.setItem(SK+'s',JSON.stringify(sites));
+  localStorage.setItem(SK+'a',JSON.stringify(avances));
+  localStorage.setItem(SK+'ab',JSON.stringify(absences));
+  localStorage.setItem(SK+'h',JSON.stringify(heures));
+  localStorage.setItem(SK+'p',JSON.stringify(primes));
+  localStorage.setItem(SK+'pay',JSON.stringify(paiements));
+}
+
+function fd(d){if(!d)return'—';const[y,m,dd]=d.split('-');return dd+'/'+m+'/'+y;}
+function td(){return new Date().toISOString().split('T')[0];}
+function gW(id){return workers.find(w=>w.id===id);}
+function gS(id){return sites.find(s=>s.id===id);}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+['modal-del','modal-pay','modal-hist','modal-edit'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
+});
+let _delCb=null;
+document.getElementById('modal-del-ok').onclick=()=>{if(_delCb)_delCb();closeModal('modal-del');};
+function confirmDel(cb){_delCb=cb;openModal('modal-del');}
+
+function getJourNum(n){return{Dimanche:0,Lundi:1,Mardi:2,Mercredi:3,Jeudi:4,Vendredi:5,Samedi:6}[n]||4;}
+
+function calcEcheancier(avance,worker){
+  if(!avance.echelonne)return[];
+  const dates=[];
+  const debut=new Date(avance.dateDebut||avance.date);
+  const jours=worker?worker.jours:[];
+  if(!jours||jours.length===0){
+    for(let i=0;i<avance.semainesTotales;i++){const d=new Date(debut);d.setDate(d.getDate()+7*(i+1));dates.push(d.toISOString().split('T')[0]);}
+  } else {
+    const jourNums=jours.map(j=>getJourNum(j));
+    let cursor=new Date(debut);cursor.setDate(cursor.getDate()+1);
+    let found=0,maxIter=365*avance.semainesTotales;
+    while(found<avance.semainesTotales&&maxIter-->0){
+      if(jourNums.includes(cursor.getDay())){
+        dates.push(cursor.toISOString().split('T')[0]);found++;
+        cursor.setDate(cursor.getDate()+6);
+        let sub=new Date(cursor);
+        for(let k=0;k<7;k++){if(jourNums.includes(sub.getDay())){cursor=sub;break;}sub=new Date(sub);sub.setDate(sub.getDate()+1);}
+      } else cursor.setDate(cursor.getDate()+1);
+    }
+  }
+  return dates;
+}
+
+function prochaineTranche(avance,worker){
+  const dates=calcEcheancier(avance,worker);
+  const payees=avance.semainesPayees||0;
+  return payees>=dates.length?null:dates[payees];
+}
+
+function getDateRef(w){
+  // Priorité: dernier paiement enregistré → date dernier paiement manuel → date embauche → date création
+  const lastPay=paiements.filter(p=>p.ouvrierId===w.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  if(lastPay)return new Date(lastPay.date);
+  if(w.lastPayDate)return new Date(w.lastPayDate);
+  if(w.embauche)return new Date(w.embauche);
+  if(w.dateCreation)return new Date(w.dateCreation);
+  return new Date();
+}
+
+function getSolde(w){
+  const dateRef=getDateRef(w);
+  const now=new Date();
+  const jourNums={Lundi:1,Mardi:2,Mercredi:3,Jeudi:4,Vendredi:5,Samedi:6,Dimanche:0};
+  let semainesDues=0;
+  if(w.jours&&w.jours.length>0){
+    let cursor=new Date(dateRef);cursor.setDate(cursor.getDate()+1);
+    while(cursor<=now){
+      const dn=Object.keys(jourNums).find(k=>jourNums[k]===cursor.getDay());
+      if(w.jours.includes(dn))semainesDues++;
+      cursor.setDate(cursor.getDate()+1);
+    }
+  } else {
+    semainesDues=Math.max(0,Math.floor((now-dateRef)/(7*24*60*60*1000)));
+  }
+  const brut=w.salaire*semainesDues;
+  const today2=new Date();today2.setHours(23,59,59,0);
+  let avDues=0;
+  avances.filter(a=>a.ouvrierId===w.id&&a.statut==='en_cours').forEach(a=>{
+    if(a.echelonne){
+      const dates=calcEcheancier(a,w);
+      let dueCount=dates.filter(d=>new Date(d)<=today2).length;
+      dueCount=Math.min(dueCount,a.semainesTotales-(a.semainesPayees||0));
+      avDues+=dueCount*a.trancheParSemaine;
+    } else avDues+=a.montant;
+  });
+  const jourRate=w.salaire/6;
+  const retAbs=absences.filter(a=>{
+    if(a.ouvrierId!==w.id)return false;
+    if(a.type==='justifie'||a.type==='conge')return false;
+    const da=new Date(a.date);return da>dateRef&&da<=now;
+  }).reduce((s,a)=>s+(parseFloat(a.duree)*jourRate),0);
+  const hSup=heures.filter(h=>{if(h.ouvrierId!==w.id)return false;const dh=new Date(h.date);return dh>dateRef&&dh<=now;}).reduce((s,h)=>s+h.montant,0);
+  const pVal=primes.filter(p=>{if(p.ouvrierId!==w.id)return false;const dp=new Date(p.date);return dp>dateRef&&dp<=now;}).reduce((s,p)=>s+p.montant,0);
+  const net=Math.max(0,brut-avDues-retAbs+hSup+pVal);
+  return{semainesDues,brut,avDues,retAbs,hSup,pVal,net};
+}
+
+function showView(name,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='dashboard')renderDashboard();
+  if(name==='ouvriers'){updSiteSelects();renderWorkers();}
+  if(name==='operations'){updOpSelects();showOp('avance',document.querySelector('.itab'));}
+  if(name==='paiements'){updPaySel();renderPaiements();}
+  if(name==='sites')renderSites();
+}
+function showOp(name,btn){
+  ['avance','absence','heure','prime'].forEach(n=>document.getElementById('op-'+n).style.display='none');
+  document.getElementById('op-'+name).style.display='block';
+  document.querySelectorAll('.itab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  if(name==='avance')renderAvances();
+  if(name==='absence')renderAbsences();
+  if(name==='heure')renderHeures();
+  if(name==='prime')renderPrimes();
+}
+
+function renderDashboard(){
+  const sf=document.getElementById('global-site').value;
+  const fw=sf==='all'?workers:workers.filter(w=>w.siteId===sf);
+  const todayName=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][new Date().getDay()];
+  const payToday=fw.filter(w=>w.jours&&w.jours.includes(todayName));
+  document.getElementById('dash-alerts').innerHTML=payToday.length>0
+    ?'<div class="alert">⚠️ Paiement prévu aujourd\'hui pour: <strong>'+payToday.map(w=>w.nom).join(', ')+'</strong></div>':'';
+  let tDu=0,tAvPris=0,tAvRemb=0,tAvReste=0,tPay=0;
+  fw.forEach(w=>{
+    const s=getSolde(w);tDu+=s.net;
+    avances.filter(a=>a.ouvrierId===w.id).forEach(a=>{
+      tAvPris+=a.montant;
+      const remb=a.statut==='remboursee'?a.montant:Math.min((a.semainesPayees||0)*a.trancheParSemaine,a.montant);
+      tAvRemb+=remb;tAvReste+=Math.max(0,a.montant-remb);
+    });
+  });
+  tPay=paiements.filter(p=>sf==='all'||(gW(p.ouvrierId)&&gW(p.ouvrierId).siteId===sf)).reduce((s,p)=>s+p.netPaye,0);
+  document.getElementById('dash-sum').innerHTML=
+    '<div class="sc sp"><div class="scv cp">'+fw.length+'</div><div class="scl">Ouvriers</div></div>'+
+    '<div class="sc sg"><div class="scv cg">'+Math.round(tDu).toLocaleString()+'</div><div class="scl">Total dû HTG</div></div>'+
+    '<div class="sc sr"><div class="scv cr">'+Math.round(tAvPris).toLocaleString()+'</div><div class="scl">Avances prises</div></div>'+
+    '<div class="sc so"><div class="scv co">'+Math.round(tAvRemb).toLocaleString()+'</div><div class="scl">Remboursé</div></div>'+
+    '<div class="sc sr"><div class="scv cr">'+Math.round(tAvReste).toLocaleString()+'</div><div class="scl">Reste avances</div></div>'+
+    '<div class="sc sgr"><div class="scv cgr">'+Math.round(tPay).toLocaleString()+'</div><div class="scl">Total payé</div></div>'+
+    '<div class="sc sb"><div class="scv cb">'+sites.length+'</div><div class="scl">Sites</div></div>';
+  document.getElementById('dash-site-lbl').textContent=sf==='all'?'Tous les sites':(gS(sf)||{nom:''}).nom;
+  if(!fw.length){document.getElementById('dash-workers').innerHTML='<div class="empty"><div class="empty-icon">👷</div><p>Aucun ouvrier.<br>Ajoutez-en dans l\'onglet Ouvriers.</p></div>';return;}
+  document.getElementById('dash-workers').innerHTML=fw.map(w=>{
+    const s=getSolde(w);const site=gS(w.siteId);
+    const avPris=avances.filter(a=>a.ouvrierId===w.id).reduce((x,a)=>x+a.montant,0);
+    const avReste=avances.filter(a=>a.ouvrierId===w.id&&a.statut==='en_cours').reduce((x,a)=>x+Math.max(0,a.montant-(a.semainesPayees||0)*a.trancheParSemaine),0);
+    const dateRef=getDateRef(w);
+    return '<div class="wcard">'+
+      '<div class="wcard-head"><div><div class="wcard-name">'+w.nom+'</div><div class="wcard-sub">'+(w.poste||'—')+(site?' · '+site.nom:'')+(w.embauche?' · Depuis '+fd(w.embauche):'')+'</div></div>'+
+      '<div class="solde-b"><div class="solde-v">'+Math.round(s.net).toLocaleString()+'</div><div class="solde-l">HTG dû</div></div></div>'+
+      '<div class="wmeta">'+
+        '<span class="tag tg">'+w.salaire.toLocaleString()+'/sem</span>'+
+        (s.semainesDues>0?'<span class="tag tb">'+s.semainesDues+' sem. dues</span>':'')+
+        (avPris>0?'<span class="tag tr">Pris: '+Math.round(avPris).toLocaleString()+'</span>':'')+
+        (avReste>0?'<span class="tag to">Reste: '+Math.round(avReste).toLocaleString()+'</span>':'')+
+        (s.hSup>0?'<span class="tag to">+'+Math.round(s.hSup).toLocaleString()+' sup</span>':'')+
+        (s.pVal>0?'<span class="tag tgr">+'+Math.round(s.pVal).toLocaleString()+' prime</span>':'')+
+        (w.jours&&w.jours.length?'<span class="tag tb">'+w.jours.join(', ')+'</span>':'')+
+      '</div>'+
+      '<div class="wstats">'+
+        '<div class="sv"><div class="sv-v">'+Math.round(s.brut).toLocaleString()+'</div><div class="sv-l">Brut</div></div>'+
+        '<div class="sv"><div class="sv-v" style="color:var(--red)">-'+Math.round(s.avDues+s.retAbs).toLocaleString()+'</div><div class="sv-l">Déduct.</div></div>'+
+        '<div class="sv"><div class="sv-v" style="color:var(--green)">'+Math.round(s.net).toLocaleString()+'</div><div class="sv-l">Net HTG</div></div>'+
+      '</div>'+
+      '<div class="wactions">'+
+        '<button class="btn bs bsm" onclick="quickPay('+w.id+')">✅ Payer</button>'+
+        '<button class="btn bg bsm" onclick="editWorker('+w.id+')">✏️ Modifier</button>'+
+        '<button class="btn bg bsm" onclick="showHist('+w.id+')">📋 Hist.</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function addSite(){
+  const nom=document.getElementById('s-nom').value.trim();
+  if(!nom)return alert('Nom obligatoire.');
+  sites.push({id:Date.now(),nom,adresse:document.getElementById('s-adresse').value.trim()});
+  save();document.getElementById('s-nom').value='';document.getElementById('s-adresse').value='';
+  renderSites();updSiteSelects();
+}
+function renderSites(){
+  const el=document.getElementById('sites-list');
+  if(!sites.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏪</div><p>Aucun site enregistré.</p></div>';return;}
+  el.innerHTML=sites.map(s=>{
+    const nb=workers.filter(w=>w.siteId===s.id).length;
+    return '<div class="wcard"><div class="wcard-name">'+s.nom+'</div><div class="wcard-sub">'+(s.adresse||'—')+'</div>'+
+      '<div class="wmeta" style="margin-top:8px"><span class="tag tb">'+nb+' ouvrier(s)</span></div>'+
+      '<div class="wactions"><button class="btn bd bsm" onclick="confirmDel(()=>{sites=sites.filter(x=>x.id!=='+s.id+');save();renderSites();updSiteSelects();})">🗑 Supprimer</button></div></div>';
+  }).join('');
+}
+function updSiteSelects(){
+  const opts='<option value="">— Sélectionner —</option>'+sites.map(s=>'<option value="'+s.id+'">'+s.nom+'</option>').join('');
+  ['w-site','edit-site'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  const gOpts='<option value="all">🏢 Tous</option>'+sites.map(s=>'<option value="'+s.id+'">🏪 '+s.nom+'</option>').join('');
+  document.getElementById('global-site').innerHTML=gOpts;
+}
+
+document.querySelectorAll('#days-picker .dc').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+function addWorker(){
+  const nom=document.getElementById('w-nom').value.trim();
+  const salaire=parseFloat(document.getElementById('w-salaire').value)||0;
+  if(!nom)return alert('Nom obligatoire.');
+  if(!salaire)return alert('Salaire obligatoire.');
+  const jours=[...document.querySelectorAll('#days-picker .dc.on')].map(c=>c.dataset.day);
+  const embauche=document.getElementById('w-embauche').value||td();
+  workers.push({id:Date.now(),nom,poste:document.getElementById('w-poste').value.trim(),salaire,siteId:document.getElementById('w-site').value||null,embauche,tel:document.getElementById('w-tel').value.trim(),notes:document.getElementById('w-notes').value.trim(),jours,dateCreation:td()});
+  save();
+  ['w-nom','w-poste','w-salaire','w-tel','w-notes','w-embauche'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('#days-picker .dc').forEach(c=>c.classList.remove('on'));
+  renderWorkers();renderDashboard();
+}
+function renderWorkers(){
+  const el=document.getElementById('workers-list');
+  if(!workers.length){el.innerHTML='<div class="empty"><div class="empty-icon">👷</div><p>Aucun ouvrier enregistré.</p></div>';return;}
+  el.innerHTML=workers.map(w=>{
+    const site=gS(w.siteId);const s=getSolde(w);
+    return '<div class="wcard">'+
+      '<div class="wcard-head"><div><div class="wcard-name">'+w.nom+'</div><div class="wcard-sub">'+(w.poste||'—')+(site?' · '+site.nom:'')+'</div></div>'+
+      '<div class="solde-b"><div class="solde-v">'+Math.round(s.net).toLocaleString()+'</div><div class="solde-l">HTG dû</div></div></div>'+
+      '<div class="wmeta">'+
+        '<span class="tag tg">'+w.salaire.toLocaleString()+' HTG/sem</span>'+
+        (w.embauche?'<span class="tag tb">Depuis '+fd(w.embauche)+'</span>':'')+
+        (w.jours&&w.jours.length?'<span class="tag tb">'+w.jours.join(', ')+'</span>':'')+
+      '</div>'+
+      '<div class="wactions">'+
+        '<button class="btn bg bsm" onclick="editWorker('+w.id+')">✏️ Modifier</button>'+
+        '<button class="btn bg bsm" onclick="showHist('+w.id+')">📋 Hist.</button>'+
+        '<button class="btn bd bsm" onclick="confirmDel(()=>{workers=workers.filter(x=>x.id!=='+w.id+');avances=avances.filter(x=>x.ouvrierId!=='+w.id+');absences=absences.filter(x=>x.ouvrierId!=='+w.id+');heures=heures.filter(x=>x.ouvrierId!=='+w.id+');primes=primes.filter(x=>x.ouvrierId!=='+w.id+');save();renderWorkers();renderDashboard();})">🗑</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+let _editId=null;
+function editWorker(wid){
+  const w=gW(wid);if(!w)return;_editId=wid;
+  document.getElementById('edit-nom').value=w.nom||'';
+  document.getElementById('edit-poste').value=w.poste||'';
+  document.getElementById('edit-salaire').value=w.salaire||'';
+  document.getElementById('edit-tel').value=w.tel||'';
+  document.getElementById('edit-notes').value=w.notes||'';
+  document.getElementById('edit-embauche').value=w.embauche||'';
+  document.getElementById('edit-lastpay').value=w.lastPayDate||'';
+  updSiteSelects();
+  setTimeout(()=>{
+    document.getElementById('edit-site').innerHTML='<option value="">— Sélectionner —</option>'+sites.map(s=>'<option value="'+s.id+'"'+(w.siteId===s.id?' selected':'')+'>'+s.nom+'</option>').join('');
+  },50);
+  document.querySelectorAll('#edit-days .dc').forEach(c=>{
+    c.classList.toggle('on',w.jours&&w.jours.includes(c.dataset.day));
+    c.onclick=()=>c.classList.toggle('on');
+  });
+  document.getElementById('modal-edit-ok').onclick=()=>{
+    const nom=document.getElementById('edit-nom').value.trim();
+    const salaire=parseFloat(document.getElementById('edit-salaire').value)||0;
+    if(!nom)return alert('Nom obligatoire.');
+    if(!salaire)return alert('Salaire obligatoire.');
+    const idx=workers.findIndex(x=>x.id===_editId);if(idx===-1)return;
+    workers[idx]={...workers[idx],nom,poste:document.getElementById('edit-poste').value.trim(),salaire,siteId:document.getElementById('edit-site').value||null,embauche:document.getElementById('edit-embauche').value||workers[idx].embauche,lastPayDate:document.getElementById('edit-lastpay').value||null,tel:document.getElementById('edit-tel').value.trim(),notes:document.getElementById('edit-notes').value.trim(),jours:[...document.querySelectorAll('#edit-days .dc.on')].map(c=>c.dataset.day)};
+    save();closeModal('modal-edit');renderWorkers();renderDashboard();
+  };
+  openModal('modal-edit');
+}
+
+function updOpSelects(){
+  ['a-ouvrier','ab-ouvrier','h-ouvrier','p-ouvrier'].forEach(id=>{
+    const el=document.getElementById(id),cur=el.value;
+    el.innerHTML='<option value="">— Sélectionner —</option>'+workers.map(w=>'<option value="'+w.id+'"'+(w.id==cur?' selected':'')+'>'+w.nom+(gS(w.siteId)?' ('+gS(w.siteId).nom+')':'')+'</option>').join('');
+  });
+}
+function updPaySel(){
+  document.getElementById('pay-ouvrier').innerHTML='<option value="">— Sélectionner —</option>'+workers.map(w=>'<option value="'+w.id+'">'+w.nom+(gS(w.siteId)?' ('+gS(w.siteId).nom+')':'')+'</option>').join('');
+}
+
+document.getElementById('a-type').addEventListener('change',function(){
+  const ech=this.value==='echelonne';
+  document.getElementById('a-sem-grp').style.display=ech?'flex':'none';
+  document.getElementById('a-debut-grp').style.display=ech?'flex':'none';
+  updAvPrev();
+});
+function updAvPrev(){
+  const m=parseFloat(document.getElementById('a-montant').value)||0;
+  const type=document.getElementById('a-type').value;
+  const sem=parseInt(document.getElementById('a-semaines').value)||1;
+  const debut=document.getElementById('a-debut').value;
+  const oId=parseInt(document.getElementById('a-ouvrier').value);
+  const prev=document.getElementById('a-prev');
+  const echEl=document.getElementById('a-echeancier');
+  const echRows=document.getElementById('a-echeancier-rows');
+  if(!m){prev.style.display='none';echEl.style.display='none';return;}
+  if(type==='echelonne'){
+    const t=Math.ceil(m/sem);
+    prev.style.display='block';
+    prev.innerHTML='💡 <strong>'+m.toLocaleString()+' HTG</strong> ÷ '+sem+' semaines = <strong>'+t.toLocaleString()+' HTG / semaine</strong>';
+    if(debut&&oId){
+      const w=gW(oId);
+      const fakeAv={echelonne:true,semainesTotales:sem,trancheParSemaine:t,date:document.getElementById('a-date').value||td(),dateDebut:debut,semainesPayees:0};
+      const dates=calcEcheancier(fakeAv,w);
+      if(dates.length>0){
+        echEl.style.display='block';
+        echRows.innerHTML=dates.map((d,i)=>'<div class="ech-row"><span class="ech-date">Tranche '+(i+1)+' — '+fd(d)+'</span><span class="ech-amt">'+t.toLocaleString()+' HTG</span></div>').join('');
+      } else echEl.style.display='none';
+    } else echEl.style.display='none';
+  } else {
+    prev.style.display='block';
+    prev.innerHTML='💡 <strong>'+m.toLocaleString()+' HTG</strong> déduit en une seule fois au prochain paiement';
+    echEl.style.display='none';
+  }
+}
+function addAvance(){
+  const oId=parseInt(document.getElementById('a-ouvrier').value);
+  const m=parseFloat(document.getElementById('a-montant').value)||0;
+  const date=document.getElementById('a-date').value;
+  const debut=document.getElementById('a-debut').value;
+  const type=document.getElementById('a-type').value;
+  const sem=type==='echelonne'?(parseInt(document.getElementById('a-semaines').value)||1):1;
+  if(!oId)return alert('Sélectionnez un ouvrier.');
+  if(!m)return alert('Entrez un montant.');
+  if(!date)return alert('Entrez une date.');
+  if(type==='echelonne'&&!debut)return alert('Entrez la date de début de remboursement.');
+  avances.push({id:Date.now(),ouvrierId:oId,montant:m,date,dateDebut:debut||date,mode:document.getElementById('a-mode').value,motif:document.getElementById('a-motif').value.trim(),statut:'en_cours',echelonne:type==='echelonne',semainesTotales:sem,semainesPayees:0,trancheParSemaine:Math.ceil(m/sem)});
+  save();
+  document.getElementById('a-montant').value='';document.getElementById('a-motif').value='';
+  document.getElementById('a-prev').style.display='none';document.getElementById('a-echeancier').style.display='none';
+  renderAvances();renderDashboard();
+}
+function renderAvances(){
+  const tb=document.getElementById('avances-tbody');
+  if(!avances.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Aucune avance</td></tr>';return;}
+  tb.innerHTML=[...avances].reverse().map(a=>{
+    const w=gW(a.ouvrierId);let tc='',pc='',nextCell='—';
+    if(a.echelonne&&a.statut!=='remboursee'){
+      const p=a.semainesPayees||0,t=a.semainesTotales||1,pct=Math.round(p/t*100);
+      tc='<span class="tag tg">📅 '+a.trancheParSemaine.toLocaleString()+'/sem · '+p+'/'+t+'</span>';
+      pc='<div class="prog"><div class="prog-f" style="width:'+pct+'%;background:var(--gold)"></div></div><div style="font-size:0.7rem;color:var(--muted);margin-top:2px">'+Math.max(0,a.montant-p*a.trancheParSemaine).toLocaleString()+' HTG reste</div>';
+      const next=prochaineTranche(a,w);
+      nextCell=next?'<span style="color:var(--accent);font-weight:600">'+fd(next)+'</span>':'<span class="tag tgr">✅ Terminé</span>';
+    } else if(a.statut==='remboursee'){
+      tc='<span class="tag tgr">✓ Soldée</span>';
+      pc='<div class="prog"><div class="prog-f" style="width:100%;background:var(--green)"></div></div>';
+    } else {tc='<span class="tag tr">Unique</span>';pc='—';}
+    return '<tr><td><strong>'+(w?w.nom:'—')+'</strong></td><td class="mono" style="color:var(--gold)">'+a.montant.toLocaleString()+'</td><td class="mono">'+fd(a.date)+'</td><td>'+tc+'</td><td>'+pc+'</td><td>'+nextCell+'</td><td style="white-space:nowrap">'+
+      (a.echelonne&&a.statut==='en_cours'?'<button class="btn bg bsm" onclick="payTranche('+a.id+')">+1 sem.</button> ':'')+
+      (!a.echelonne&&a.statut==='en_cours'?'<button class="btn bg bsm" onclick="soldeAv('+a.id+')">✓ Soldée</button> ':'')+
+      '<button class="btn bd bsm" onclick="confirmDel(()=>{avances=avances.filter(x=>x.id!=='+a.id+');save();renderAvances();renderDashboard();})">🗑</button></td></tr>';
+  }).join('');
+}
+function payTranche(id){const a=avances.find(x=>x.id===id);if(!a)return;a.semainesPayees=(a.semainesPayees||0)+1;if(a.semainesPayees>=a.semainesTotales)a.statut='remboursee';save();renderAvances();renderDashboard();}
+function soldeAv(id){const a=avances.find(x=>x.id===id);if(a){a.statut='remboursee';save();renderAvances();renderDashboard();}}
+
+function addAbsence(){
+  const oId=parseInt(document.getElementById('ab-ouvrier').value);
+  const date=document.getElementById('ab-date').value;
+  if(!oId)return alert('Sélectionnez un ouvrier.');
+  if(!date)return alert('Entrez une date.');
+  absences.push({id:Date.now(),ouvrierId:oId,date,duree:document.getElementById('ab-duree').value,type:document.getElementById('ab-type').value,motif:document.getElementById('ab-motif').value.trim()});
+  save();document.getElementById('ab-motif').value='';renderAbsences();renderDashboard();
+}
+function renderAbsences(){
+  const tb=document.getElementById('absences-tbody');
+  if(!absences.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Aucune absence</td></tr>';return;}
+  const tL={injustifie:'🔴 Injustifiée',justifie:'🟢 Justifiée',maladie:'🟡 Maladie',conge:'🔵 Congé'};
+  tb.innerHTML=[...absences].reverse().map(a=>{
+    const w=gW(a.ouvrierId);
+    const r=w&&(a.type==='injustifie'||a.type==='maladie')?(parseFloat(a.duree)*w.salaire/6):0;
+    return '<tr><td><strong>'+(w?w.nom:'—')+'</strong></td><td class="mono">'+fd(a.date)+'</td><td>'+(a.duree==1?'Journée':'Demi-j.')+'</td><td>'+(tL[a.type]||a.type)+'</td><td style="color:var(--muted)">'+(a.motif||'—')+'</td><td class="mono" style="color:'+(r>0?'var(--red)':'var(--green)')+'"> '+(r>0?'-'+Math.round(r).toLocaleString()+' HTG':'Aucune')+'</td><td><button class="btn bd bsm" onclick="confirmDel(()=>{absences=absences.filter(x=>x.id!=='+a.id+');save();renderAbsences();renderDashboard();})">🗑</button></td></tr>';
+  }).join('');
+}
+
+document.getElementById('h-taux').addEventListener('change',function(){
+  document.getElementById('h-cust-grp').style.display=this.value==='custom'?'flex':'none';updHPrev();
+});
+function updHPrev(){
+  const oId=parseInt(document.getElementById('h-ouvrier').value);
+  const hVal=parseFloat(document.getElementById('h-heures').value)||0;
+  const tSel=document.getElementById('h-taux').value;
+  const taux=tSel==='custom'?(parseFloat(document.getElementById('h-custom').value)||1.5):parseFloat(tSel);
+  const prev=document.getElementById('h-prev');
+  if(!oId||!hVal){prev.style.display='none';return;}
+  const w=gW(oId);if(!w){prev.style.display='none';return;}
+  const tauxH=w.salaire/6/8;
+  prev.style.display='block';
+  prev.innerHTML='💡 '+Math.round(tauxH).toLocaleString()+' HTG/h × '+taux+' = <strong>'+Math.round(hVal*tauxH*taux).toLocaleString()+' HTG</strong>';
+}
+function addHeure(){
+  const oId=parseInt(document.getElementById('h-ouvrier').value);
+  const hVal=parseFloat(document.getElementById('h-heures').value)||0;
+  const date=document.getElementById('h-date').value;
+  const tSel=document.getElementById('h-taux').value;
+  const taux=tSel==='custom'?(parseFloat(document.getElementById('h-custom').value)||1.5):parseFloat(tSel);
+  if(!oId)return alert('Sélectionnez un ouvrier.');
+  if(!hVal)return alert('Entrez le nombre d\'heures.');
+  if(!date)return alert('Entrez une date.');
+  const w=gW(oId);const tauxH=w.salaire/6/8;
+  heures.push({id:Date.now(),ouvrierId:oId,date,heures:hVal,taux,montant:Math.round(hVal*tauxH*taux),motif:document.getElementById('h-motif').value.trim()});
+  save();document.getElementById('h-heures').value='';document.getElementById('h-motif').value='';
+  document.getElementById('h-prev').style.display='none';renderHeures();renderDashboard();
+}
+function renderHeures(){
+  const tb=document.getElementById('heures-tbody');
+  if(!heures.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Aucune heure sup.</td></tr>';return;}
+  tb.innerHTML=[...heures].reverse().map(h=>{
+    const w=gW(h.ouvrierId);
+    return '<tr><td><strong>'+(w?w.nom:'—')+'</strong></td><td class="mono">'+fd(h.date)+'</td><td class="mono">'+h.heures+'h</td><td class="mono">×'+h.taux+'</td><td class="mono" style="color:var(--orange)">+'+h.montant.toLocaleString()+' HTG</td><td style="color:var(--muted)">'+(h.motif||'—')+'</td><td><button class="btn bd bsm" onclick="confirmDel(()=>{heures=heures.filter(x=>x.id!=='+h.id+');save();renderHeures();renderDashboard();})">🗑</button></td></tr>';
+  }).join('');
+}
+
+function addPrime(){
+  const oId=parseInt(document.getElementById('p-ouvrier').value);
+  const m=parseFloat(document.getElementById('p-montant').value)||0;
+  const date=document.getElementById('p-date').value;
+  if(!oId)return alert('Sélectionnez un ouvrier.');
+  if(!m)return alert('Entrez un montant.');
+  if(!date)return alert('Entrez une date.');
+  primes.push({id:Date.now(),ouvrierId:oId,montant:m,date,motif:document.getElementById('p-motif').value.trim()});
+  save();document.getElementById('p-montant').value='';document.getElementById('p-motif').value='';
+  renderPrimes();renderDashboard();
+}
+function renderPrimes(){
+  const tb=document.getElementById('primes-tbody');
+  if(!primes.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:28px">Aucune prime</td></tr>';return;}
+  tb.innerHTML=[...primes].reverse().map(p=>{
+    const w=gW(p.ouvrierId);
+    return '<tr><td><strong>'+(w?w.nom:'—')+'</strong></td><td class="mono" style="color:var(--green)">+'+p.montant.toLocaleString()+' HTG</td><td class="mono">'+fd(p.date)+'</td><td style="color:var(--muted)">'+(p.motif||'—')+'</td><td><button class="btn bd bsm" onclick="confirmDel(()=>{primes=primes.filter(x=>x.id!=='+p.id+');save();renderPrimes();renderDashboard();})">🗑</button></td></tr>';
+  }).join('');
+}
+
+let _currentSolde=null;
+function updPayPrev(){
+  const oId=parseInt(document.getElementById('pay-ouvrier').value);
+  const prev=document.getElementById('pay-prev');
+  if(!oId){prev.style.display='none';_currentSolde=null;return;}
+  const w=gW(oId);if(!w){prev.style.display='none';return;}
+  const s=getSolde(w);_currentSolde={s,w,oId};
+  prev.style.display='block';
+  prev.innerHTML='<div class="pay-sum">'+
+    '<div class="prow"><span class="plbl">Semaines accumulées</span><span class="pval neu">'+s.semainesDues+' sem.</span></div>'+
+    '<div class="prow"><span class="plbl">Salaire brut</span><span class="pval pos">+'+Math.round(s.brut).toLocaleString()+' HTG</span></div>'+
+    (s.hSup>0?'<div class="prow"><span class="plbl">Heures sup.</span><span class="pval pos">+'+Math.round(s.hSup).toLocaleString()+' HTG</span></div>':'')+
+    (s.pVal>0?'<div class="prow"><span class="plbl">Primes</span><span class="pval pos">+'+Math.round(s.pVal).toLocaleString()+' HTG</span></div>':'')+
+    (s.avDues>0?'<div class="prow"><span class="plbl">Avances déduites</span><span class="pval neg">-'+Math.round(s.avDues).toLocaleString()+' HTG</span></div>':'')+
+    (s.retAbs>0?'<div class="prow"><span class="plbl">Retenues absences</span><span class="pval neg">-'+Math.round(s.retAbs).toLocaleString()+' HTG</span></div>':'')+
+    '<div class="prow ptotal"><span>NET À PAYER</span><span class="pval">'+Math.round(s.net).toLocaleString()+' HTG</span></div>'+
+  '</div>';
+}
+
+function effectuerPaiement(){
+  const oId=parseInt(document.getElementById('pay-ouvrier').value);
+  const date=document.getElementById('pay-date').value;
+  const mode=document.getElementById('pay-mode').value;
+  const note=document.getElementById('pay-note').value.trim();
+  if(!oId)return alert('Sélectionnez un ouvrier.');
+  if(!date)return alert('Entrez une date.');
+  const w=gW(oId);const s=getSolde(w);
+  if(s.semainesDues===0&&s.net===0)return alert('Aucun montant dû pour cet ouvrier.\n\nSi ce n\'est pas correct, allez dans ✏️ Modifier et renseignez la "Date dernier paiement".');
+  document.getElementById('modal-pay-content').innerHTML='<div class="pay-sum">'+
+    '<div class="prow"><span class="plbl">Ouvrier</span><span class="pval">'+w.nom+'</span></div>'+
+    '<div class="prow"><span class="plbl">Semaines</span><span class="pval neu">'+s.semainesDues+'</span></div>'+
+    '<div class="prow"><span class="plbl">Brut</span><span class="pval pos">+'+Math.round(s.brut).toLocaleString()+'</span></div>'+
+    (s.hSup>0?'<div class="prow"><span class="plbl">Heures sup.</span><span class="pval pos">+'+Math.round(s.hSup).toLocaleString()+'</span></div>':'')+
+    (s.pVal>0?'<div class="prow"><span class="plbl">Primes</span><span class="pval pos">+'+Math.round(s.pVal).toLocaleString()+'</span></div>':'')+
+    (s.avDues>0?'<div class="prow"><span class="plbl">Avances</span><span class="pval neg">-'+Math.round(s.avDues).toLocaleString()+'</span></div>':'')+
+    (s.retAbs>0?'<div class="prow"><span class="plbl">Absences</span><span class="pval neg">-'+Math.round(s.retAbs).toLocaleString()+'</span></div>':'')+
+    '<div class="prow ptotal"><span>NET CALCULÉ</span><span class="pval">'+Math.round(s.net).toLocaleString()+' HTG</span></div>'+
+  '</div>';
+  document.getElementById('modal-pay-amount').value=Math.round(s.net);
+  document.getElementById('avance-auto-msg').style.display='none';
+  document.getElementById('modal-pay-ok').onclick=()=>{
+    const montantDonne=parseFloat(document.getElementById('modal-pay-amount').value)||0;
+    if(montantDonne<=0)return alert('Entrez le montant donné.');
+    const diff=montantDonne-s.net;
+    avances.filter(a=>a.ouvrierId===oId&&a.statut==='en_cours').forEach(a=>{
+      if(a.echelonne){
+        const dates=calcEcheancier(a,w);
+        const t2=new Date();t2.setHours(23,59,59,0);
+        const dueCount=Math.min(dates.filter(d=>new Date(d)<=t2).length,a.semainesTotales-(a.semainesPayees||0));
+        a.semainesPayees=(a.semainesPayees||0)+dueCount;
+        if(a.semainesPayees>=a.semainesTotales)a.statut='remboursee';
+      } else a.statut='remboursee';
+    });
+    if(diff>0){
+      avances.push({id:Date.now(),ouvrierId:oId,montant:diff,date,dateDebut:date,mode:'cash',motif:'Avance auto (trop-perçu)',statut:'en_cours',echelonne:false,semainesTotales:1,semainesPayees:0,trancheParSemaine:diff});
+    }
+    paiements.push({id:Date.now(),ouvrierId:oId,date,mode,note,semainesDues:s.semainesDues,brut:s.brut,avDues:s.avDues,retAbs:s.retAbs,hSup:s.hSup,pVal:s.pVal,netPaye:montantDonne});
+    save();closeModal('modal-pay');
+    document.getElementById('pay-ouvrier').value='';
+    document.getElementById('pay-prev').style.display='none';
+    renderPaiements();renderDashboard();
+    let msg='✅ '+montantDonne.toLocaleString()+' HTG payés à '+w.nom+'!';
+    if(diff>0)msg+='\n⚠️ Surplus de '+Math.round(diff).toLocaleString()+' HTG enregistré comme avance.';
+    if(diff<0)msg+='\n📌 Reste dû: '+Math.round(-diff).toLocaleString()+' HTG reporté.';
+    alert(msg);
+  };
+  openModal('modal-pay');
+}
+
+function updPayAmount(){
+  const montant=parseFloat(document.getElementById('modal-pay-amount').value)||0;
+  if(!_currentSolde)return;
+  const net=_currentSolde.s.net;
+  const diff=montant-net;
+  const msgEl=document.getElementById('avance-auto-msg');
+  if(diff>0){
+    msgEl.className='avance-auto danger';msgEl.style.display='block';
+    msgEl.innerHTML='⚠️ Surplus de '+Math.round(diff).toLocaleString()+' HTG → enregistré comme avance pour la semaine prochaine.';
+  } else if(diff<0&&montant>0){
+    msgEl.className='avance-auto warning';msgEl.style.display='block';
+    msgEl.innerHTML='📌 Reste dû: '+Math.round(-diff).toLocaleString()+' HTG → reporté à la semaine prochaine.';
+  } else msgEl.style.display='none';
+}
+
+function quickPay(wid){
+  showView('paiements',document.querySelectorAll('.nbtn')[3]);
+  setTimeout(()=>{document.getElementById('pay-ouvrier').value=wid;document.getElementById('pay-date').value=td();updPayPrev();},100);
+}
+
+function renderPaiements(){
+  const tb=document.getElementById('paiements-tbody');
+  if(!paiements.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Aucun paiement effectué</td></tr>';return;}
+  const mI={cash:'💵 Cash',virement:'🏦 Virement',mobile:'📱 Mobile'};
+  tb.innerHTML=[...paiements].reverse().map(p=>{
+    const w=gW(p.ouvrierId);const site=w?gS(w.siteId):null;
+    return '<tr><td><strong>'+(w?w.nom:'—')+'</strong></td><td style="color:var(--muted)">'+(site?site.nom:'—')+'</td><td class="mono">'+fd(p.date)+'</td><td class="mono">'+p.semainesDues+'</td><td class="mono">'+Math.round(p.brut).toLocaleString()+'</td><td class="mono" style="color:var(--red)">-'+Math.round((p.avDues||0)+(p.retAbs||0)).toLocaleString()+'</td><td class="mono" style="color:var(--green);font-weight:700">'+Math.round(p.netPaye).toLocaleString()+' HTG</td><td>'+(mI[p.mode]||p.mode)+'</td></tr>';
+  }).join('');
+}
+
+function showHist(wid){
+  const w=gW(wid);if(!w)return;
+  document.getElementById('hist-title').textContent='📋 '+w.nom;
+  const s=getSolde(w);
+  let html='<div class="pay-sum">'+
+    '<div class="prow ptotal"><span>Solde actuel dû</span><span class="pval">'+Math.round(s.net).toLocaleString()+' HTG</span></div>'+
+    '<div class="prow"><span class="plbl">Semaines accumulées</span><span class="pval neu">'+s.semainesDues+'</span></div>'+
+    (w.embauche?'<div class="prow"><span class="plbl">Date d\'embauche</span><span class="pval">'+fd(w.embauche)+'</span></div>':'')+
+    (w.lastPayDate?'<div class="prow"><span class="plbl">Dernier paiement manuel</span><span class="pval">'+fd(w.lastPayDate)+'</span></div>':'')+
+  '</div>';
+  const wPay=paiements.filter(p=>p.ouvrierId===wid);
+  const wAv=avances.filter(a=>a.ouvrierId===wid);
+  const wH=heures.filter(h=>h.ouvrierId===wid);
+  const wP=primes.filter(p=>p.ouvrierId===wid);
+  if(wPay.length){
+    html+='<div class="divider">Paiements ('+wPay.length+')</div>';
+    [...wPay].reverse().forEach(p=>{html+='<div class="hist-item"><div class="hist-h"><span class="hist-date">'+fd(p.date)+'</span><span class="hist-amt">'+Math.round(p.netPaye).toLocaleString()+' HTG</span></div><div class="hist-d"><span>'+p.semainesDues+' sem.</span><span>Brut: '+Math.round(p.brut).toLocaleString()+'</span>'+(p.avDues>0?'<span style="color:var(--red)">Av: -'+Math.round(p.avDues).toLocaleString()+'</span>':'')+'</div></div>';});
+  }
+  if(wAv.length){
+    html+='<div class="divider">Avances ('+wAv.length+')</div>';
+    wAv.forEach(a=>{
+      const dates=a.echelonne?calcEcheancier(a,w):[];
+      html+='<div class="hist-item"><div class="hist-h"><span class="hist-date">'+fd(a.date)+'</span><span style="color:var(--red);font-family:\'JetBrains Mono\',monospace;font-weight:700">'+a.montant.toLocaleString()+' HTG</span></div>'+
+        '<div class="hist-d"><span>'+(a.echelonne?a.trancheParSemaine.toLocaleString()+'/sem · '+(a.semainesPayees||0)+'/'+a.semainesTotales:'Unique')+'</span><span class="tag '+(a.statut==='remboursee'?'tgr':'tr')+'">'+(a.statut==='remboursee'?'✓ Soldée':'En cours')+'</span></div>'+
+        (a.echelonne&&dates.length?'<div style="margin-top:6px">'+dates.map((d,i)=>'<div class="ech-row '+(i<(a.semainesPayees||0)?'paid':'')+(i===(a.semainesPayees||0)?' next':'')+'"><span class="ech-date">T'+(i+1)+' — '+fd(d)+'</span><span class="ech-amt">'+a.trancheParSemaine.toLocaleString()+'</span></div>').join('')+'</div>':'')+'</div>';
+    });
+  }
+  if(wH.length){
+    html+='<div class="divider">Heures sup. ('+wH.length+')</div>';
+    wH.forEach(h=>{html+='<div class="hist-item"><div class="hist-h"><span class="hist-date">'+fd(h.date)+'</span><span style="color:var(--orange);font-family:\'JetBrains Mono\',monospace;font-weight:700">+'+h.montant.toLocaleString()+' HTG</span></div><div class="hist-d"><span>'+h.heures+'h × '+h.taux+'</span>'+(h.motif?'<span>'+h.motif+'</span>':'')+'</div></div>';});
+  }
+  if(wP.length){
+    html+='<div class="divider">Primes ('+wP.length+')</div>';
+    wP.forEach(p=>{html+='<div class="hist-item"><div class="hist-h"><span class="hist-date">'+fd(p.date)+'</span><span style="color:var(--green);font-family:\'JetBrains Mono\',monospace;font-weight:700">+'+p.montant.toLocaleString()+' HTG</span></div><div class="hist-d">'+(p.motif?'<span>'+p.motif+'</span>':'')+'</div></div>';});
+  }
+  document.getElementById('hist-content').innerHTML=html;
+  openModal('modal-hist');
+}
+
+// INIT
+const t0=td();
+['a-date','ab-date','h-date','p-date','pay-date','w-embauche'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=t0;});
+document.getElementById('h-ouvrier').addEventListener('change',updHPrev);
+document.getElementById('a-ouvrier').addEventListener('change',updAvPrev);
+updSiteSelects();
+renderDashboard();
+</script>
+</body>
+</html>
